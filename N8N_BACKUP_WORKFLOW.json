@@ -1,0 +1,223 @@
+{
+    "createdAt": "2025-03-08T06:43:56.489Z",
+    "updatedAt": "2025-03-23T20:14:48.000Z",
+    "id": "iKRlNEduQ9GTy5XV",
+    "name": "GithubDailyPush",
+    "active": true,
+    "nodes": [{
+            "parameters": {},
+            "type": "n8n-nodes-base.manualTrigger",
+            "typeVersion": 1,
+            "position": [700, 80],
+            "id": "ea950da9-ba6c-45c7-8b10-24a886193005",
+            "name": "When clicking ‘Test workflow’"
+        }, {
+            "parameters": {
+                "filters": {},
+                "requestOptions": {}
+            },
+            "type": "n8n-nodes-base.n8n",
+            "typeVersion": 1,
+            "position": [960, 0],
+            "id": "e585ccfa-f93f-4ea7-8a38-9b4dd51a2e22",
+            "name": "n8n",
+            "credentials": {
+                "n8nApi": {
+                    "id": "H7OKJ9QTLftsu3Oy",
+                    "name": "n8n account"
+                }
+            },
+            "onError": "continueErrorOutput"
+        }, {
+            "parameters": {
+                "rule": {
+                    "interval": [{
+                            "triggerAtHour": 4
+                        }
+                    ]
+                }
+            },
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.2,
+            "position": [700, -120],
+            "id": "80e98758-ee53-49b4-bef7-68272472327a",
+            "name": "Schedule Trigger"
+        }, {
+            "parameters": {
+                "authentication": "oAuth2",
+                "resource": "file",
+                "owner": {
+                    "__rl": true,
+                    "value": "neverbend007",
+                    "mode": "name"
+                },
+                "repository": {
+                    "__rl": true,
+                    "value": "n8nWorkflowsBackup",
+                    "mode": "list",
+                    "cachedResultName": "n8nWorkflowsBackup",
+                    "cachedResultUrl": "https://github.com/neverbend007/n8nWorkflowsBackup"
+                },
+                "filePath": "=docs{{$now.format('yyyy-MM-dd')}}/{{ $json.name }}.json",
+                "fileContent": "={{ JSON.stringify($json) }}",
+                "commitMessage": "={{$now.format('yyyy-MM-dd')}}"
+            },
+            "type": "n8n-nodes-base.github",
+            "typeVersion": 1,
+            "position": [1640, 180],
+            "id": "e888ce88-2c0b-44c9-9a2e-77ea5f814fb3",
+            "name": "GitHub",
+            "retryOnFail": true,
+            "credentials": {
+                "githubOAuth2Api": {
+                    "id": "f8xAiOFPEo1XXuly",
+                    "name": "GitHub account"
+                }
+            },
+            "onError": "continueErrorOutput"
+        }, {
+            "parameters": {
+                "options": {
+                    "reset": false
+                }
+            },
+            "type": "n8n-nodes-base.splitInBatches",
+            "typeVersion": 3,
+            "position": [1240, 80],
+            "id": "8d4c0da1-db6b-467b-8acc-e7d3dda5f4e3",
+            "name": "Loop Over Items",
+            "notesInFlow": true,
+            "onError": "continueErrorOutput"
+        }, {
+            "parameters": {
+                "sendTo": "INSERT_EMAIL_ADDRESS",
+                "subject": "n8n Workflows Backed Up Succesfully",
+                "message": "Breathe easy! :)",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.gmail",
+            "typeVersion": 2.1,
+            "position": [1820, -140],
+            "id": "0c5a417f-1256-4a4b-81a6-046dda4e6b9d",
+            "name": "SuccessMail",
+            "webhookId": "f94016b7-7bac-4487-93e1-958b9685fcc3",
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "CklBC9yZubL31M63",
+                    "name": "Gmail account"
+                }
+            }
+        }, {
+            "parameters": {
+                "sendTo": "INSERT_EMAIL_ADDRESS",
+                "subject": "n8n Workflow - Github save failed",
+                "message": "Look at your worrk flow here https://neverbend007.app.n8n.cloud/workflow/iKRlNEduQ9GTy5XV",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.gmail",
+            "typeVersion": 2.1,
+            "position": [1820, 20],
+            "id": "7eb08f51-f18c-47dd-a139-6c3a090978ba",
+            "name": "FailMail",
+            "webhookId": "df8c423b-4549-4c39-b059-53a4ae280abf",
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "CklBC9yZubL31M63",
+                    "name": "Gmail account"
+                }
+            }
+        }, {
+            "parameters": {},
+            "type": "n8n-nodes-base.limit",
+            "typeVersion": 1,
+            "position": [1640, -140],
+            "id": "83709ce5-4736-4d00-8898-ce2e650b86b3",
+            "name": "Limit"
+        }
+    ],
+    "connections": {
+        "When clicking ‘Test workflow’": {
+            "main": [[{
+                        "node": "n8n",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]]
+        },
+        "Schedule Trigger": {
+            "main": [[{
+                        "node": "n8n",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]]
+        },
+        "n8n": {
+            "main": [[{
+                        "node": "Loop Over Items",
+                        "type": "main",
+                        "index": 0
+                    }
+                ], [{
+                        "node": "FailMail",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]]
+        },
+        "Loop Over Items": {
+            "main": [[{
+                        "node": "Limit",
+                        "type": "main",
+                        "index": 0
+                    }
+                ], [{
+                        "node": "GitHub",
+                        "type": "main",
+                        "index": 0
+                    }
+                ], [{
+                        "node": "FailMail",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]]
+        },
+        "GitHub": {
+            "main": [[{
+                        "node": "Loop Over Items",
+                        "type": "main",
+                        "index": 0
+                    }
+                ], [{
+                        "node": "FailMail",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]]
+        },
+        "Limit": {
+            "main": [[{
+                        "node": "SuccessMail",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": {
+        "node:Schedule Trigger": {
+            "recurrenceRules": []
+        }
+    },
+    "meta": {
+        "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "5eb9e743-2405-49b1-954c-2b8dd38bceee",
+    "triggerCount": 1,
+    "tags": []
+}
