@@ -14,12 +14,31 @@ This n8n workflow automates daily backups of all your n8n workflows by pushing t
 
 ## 📦 Requirements
 
+This workflow requires a **Fine-Grain Personal Access Token (FGPAT)** from GitHub for secure and scoped access to a single repository.
+
+---
+
+### 🛡 How to Create a Fine-Grain GitHub Access Token
+
+1. Go to: [GitHub → Developer Settings → Fine-Grained Tokens](https://github.com/settings/personal-access-tokens)
+2. Click **Generate new token** under **Fine-grained personal access tokens**.
+3. **Name your token** something like `n8n-backup-token`.
+4. **Repository Access**: Select **Only select repositories**, then **choose the repository** you want to allow access to (e.g., `n8nWorkflowsBackup`).
+5. **Permissions**:
+   - **Repository permissions**:
+     - `Contents`: **Read and write**
+6. Set **expiration** as desired or leave it as "No expiration".
+7. Click **Generate token** and **copy it** immediately (you won’t see it again).
+
+> 💡 Use this token in your GitHub OAuth2 credential setup or directly with an HTTP request node if customizing the flow.
+
+---
+
+
 Before using this workflow, make sure you have:
 
 - A running [n8n instance](https://docs.n8n.io).
-- OAuth2 credentials configured for:
-  - **GitHub**
-  - **Gmail**
+- OAuth2 credentials configured for: **Gmail**
 - A GitHub repository created to store workflow backups.
 - Your email address added to the `SuccessMail` and `FailMail` nodes.
 
